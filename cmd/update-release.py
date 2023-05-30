@@ -55,20 +55,17 @@ infoPlistTmplVars = {
 	'CFBundleVersion' : CFBundleVersion
 }
 
-f = open(infoPlistTmpl, 'r')
-tmpl = Template(f.read())
-f.close()
+with open(infoPlistTmpl, 'r') as f:
+	tmpl = Template(f.read())
 result = tmpl.substitute(infoPlistTmplVars)
 
-f = open(infoPlist, 'w')
-f.write(result)
-f.close()
-
+with open(infoPlist, 'w') as f:
+	f.write(result)
+linePrefix = 'SYNCTHING_VERSION='
 ###
 # Update syncthing/Scripts/syncthing-resource.sh
 ###
 for line in fileinput.input(syncthingResourceScript, inplace=True):
-	linePrefix = 'SYNCTHING_VERSION='
 	if line.startswith(linePrefix):
-		line = '{}"{}"\n'.format(linePrefix, str(version))
+		line = f'{linePrefix}"{str(version)}"\n'
 	sys.stdout.write(line)
